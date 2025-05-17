@@ -26,6 +26,10 @@ body {
     background-attachment: fixed;
     counter-reset: num; }
 
+body{
+    background-image: url("../i/background 2.jpg");
+}
+
 input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     cursor: pointer; }
 

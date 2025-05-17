@@ -68,7 +68,7 @@
                     <h2 class="popup__title">
                         Добавление фильма
                         <a @click.prevent="modalAddFilmToggle" class="popup__dismiss" href="#">
-                            <img src="i/close.png" alt="Закрыть"></a>
+                            <img src="image/close.png" alt="Закрыть"></a>
                     </h2>
                 </div>
                 <div class="popup__wrapper">
@@ -115,7 +115,7 @@
                     <h2 class="popup__title">
                         Добавление сеанса
                         <a class="popup__dismiss" @click.prevent="modalSessionToggle" href="#">
-                            <img src="i/close.png"
+                            <img src="image/close.png"
                                  alt="Закрыть"
                                  id="showTimePopupDismiss"></a>
                     </h2>
@@ -198,6 +198,7 @@ const getCoordinatesFilm = (time) => {
 }
 
 const getTime = (datetime) => {
+
     let timeN = new Date(datetime)
     return addZero(timeN.getHours()) + ':' + addZero(timeN.getMinutes())
 }
@@ -207,6 +208,20 @@ const getWidthFilm = (duration) => {
 }
 
 const saveSession = async () => {
+   
+    let time = new Date();
+    let sessionDateTime = new Date(formAddSession.datetime)
+
+    if(sessionDateTime < time){
+        alert("Сеанс не может быть записан в прошлое")
+        return
+    }
+
+    if(formAddSession.datetime === "" || formAddSession.filmId === "" || formAddSession.hallId === ""){
+        alert("Необходимо заполнить все поля формы")
+        return
+    }
+
     await storeSession({...formAddSession})
     if (errors.value === '') {
         await getFilteredSessions(filterDate.value)
@@ -214,6 +229,8 @@ const saveSession = async () => {
         modalSessionToggle()
 
     } else {
+       
+        alert(errors.value)
         return
     }
 }
@@ -225,6 +242,12 @@ const addZero = (time) => {
 }
 
 const saveFilm = async () => {
+
+    const duration = +formAddFilm.duration;
+      if (duration <= 0) {
+        alert(`Укажите корректную продолжительность фильма!`)
+        return
+    }
     await storeFilm({...formAddFilm})
     if (errors.value === '') {
         await getFilms()

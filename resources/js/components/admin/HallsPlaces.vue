@@ -126,7 +126,12 @@ const setSeatStatus = async (idSeat, hallID) => {
 }
 
 const getClassType = (id) => {
-    return classMap[places.value[id].status]
+   const place = places.value[id];
+
+    if (!place || !place.status) return;
+
+    return classMap[place.status];
+
 }
 
 const getActiveHall = async (id) => {
@@ -134,9 +139,26 @@ const getActiveHall = async (id) => {
     await getPlaces(hall.value.id)
 }
 const resizeHall = async (id) => {
+    if (hall.value.row <= 0) {
+        alert(`Значение не допустимо. Укажите корректное значение рядов!`)
+        return
+    }
+    if (hall.value.col <= 0) {
+        alert(`Значение не допустимо. Укажите корректное значение мест!`)
+        return
+    }
+    if (hall.value.row === '' || hall.value.col === '') {
+        alert(`Пустое значение не допустимо`)
+        return
+    }
+    if (!id) {
+        alert(`Выберите зал!`)
+        return
+    }
     if (!window.confirm('Внимание, при изменении размера зала - статусы мест сбросятся. Продолжить?')) {
         return
     }
+
     await updateHall(id, {...hall.value})
     await getHall(id)
     await getPlaces(hall.value.id)

@@ -20,7 +20,7 @@
                 </template>
             </ul>
 
-            <p class="conf-step__paragraph">Установите цены для типов кресел:</p>
+            <p class="">Установите цены для типов кресел:</p>
             <form @submit.prevent="saveHall(hall.id)">
                 <div class="conf-step__legend">
                     <label class="conf-step__label">Цена, рублей
@@ -62,6 +62,27 @@ const getActiveHall = async (id) => {
 }
 
 const saveHall = async (id) => {
+    
+    if (!id) {
+        alert(`Выберите зал!`)
+        return
+    }
+
+    if (hall.value.price <= 0) {
+        alert(`Значение не допустимо! Укажите корректное значение цены за обычные кресла!`)
+        return
+    }
+    if (hall.value.vip_price <= 0) {
+        alert(`Значение не допустимо! Укажите корректное значение цены за VIP кресла!`)
+        return
+    }
+    if (hall.value.price === '' || hall.value.vip_price === '') {
+        alert(`Цена не указана!`)
+        return
+    }
+
+
+    console.log({...hall.value})
     await updateHall(id, {...hall.value})
     await getHall(id)
 }

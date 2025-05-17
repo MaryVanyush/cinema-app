@@ -79,11 +79,21 @@ class SessionController extends Controller
         foreach ($grouped as $key => $items) {
             $data = [];
             foreach ($items as $item) {
-                $data[] = [
-                    'film' => $item->film->name,
-                    'datetime' => $item->datetime,
-                    'duration' => $item->film->duration,
-                ];
+                if ($item->film) {
+                    $data[] = [
+                        'film' => $item->film->name,
+                        'datetime' => $item->datetime,
+                        'duration' => $item->film->duration,
+                    ];
+                } else {
+                    $data[] = [
+                        'film' => 'Неизвестный фильм',
+                        'datetime' => $item->datetime,
+                        'duration' => null,
+                    ];
+                }
+    
+
             }
             $res[$key] = [
                 'hallName' => $key,
@@ -102,13 +112,26 @@ class SessionController extends Controller
      */
     public function store(SessionRequest $request)
     {
-        $session = Session::firstOrCreate([
-            'datetime' => $request->datetime,
-            'hall_id' => $request->hallId,
-        ], [
+        $datetime = $request->datetime;
+        $hallId = $request->hallId;
+
+        $existingSession = Session::where('hall_id', $hallId)
+            ->where('datetime', $datetime)
+            ->first();
+
+
+        if ($existingSession) {
+            return response()->json(['error' => 'Сеанс уже существует в этом зале на указанное время.'], 409);
+        }
+
+        $session = Session::create([
+            'datetime' => $datetime,
+            'hall_id' => $hallId,
             'film_id' => $request->filmId,
         ]);
+
         return new SessionResource($session);
+
     }
 
     /**
